@@ -11,8 +11,8 @@ Tested with Rstest 0.12.2 and Jest 30.5.
 
 ## Usage
 
-Copy `jest-compat.mjs` into your project (it has to live inside the project root), then
-add it to your config through `extends`:
+Copy `jest-compat.mjs` into your project, or install this package and import
+`rstest-jest-compat` instead. Then add it to your config through `extends`:
 
 ```ts
 // rstest.config.ts
@@ -28,6 +28,10 @@ export default defineConfig({
 Your config stays a plain, fully typed `defineConfig`. Set `restoreMocks` on
 `jestCompat()`, not in your config: Rstest's own `restoreMocks` also resets every
 `jest.fn()` implementation.
+
+When installed as a package, the adapter adds itself to `output.bundleDependencies`
+where needed, since its setup file has to be bundled. It can't work with
+`bundleDependencies: false`; list your packages instead.
 
 ## What it covers
 
@@ -57,12 +61,12 @@ Everything else on `jest` comes straight from `rs`: `jest.fn`, `jest.mocked`,
 
 ## Tests
 
-[`test/`](./test) runs the same specs under both runners:
+[`test/`](./test) is a separate project that installs this package and runs the same specs
+under both runners:
 
 ```bash
-npm install
-npm run test:jest
-npm run test:rstest
+npm install --prefix test
+npm test
 ```
 
 Both pass all 41 tests. Under Rstest without the adapter (with only `globalThis.jest = rs`),

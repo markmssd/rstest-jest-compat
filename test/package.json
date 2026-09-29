@@ -1,0 +1,20 @@
+{
+  "name": "rstest-jest-compat-tests",
+  "private": true,
+  "scripts": {
+    "test": "npm run test:jest && npm run test:rstest",
+    "test:jest": "jest",
+    "test:rstest": "rstest run"
+  },
+  "dependencies": {
+    "@example/pkg": "file:./packages/example-scoped-pkg",
+    "example-pkg": "file:./packages/example-pkg"
+  },
+  "devDependencies": {
+    "@rstest/core": "0.12.2",
+    "@swc/core": "^1.16.2",
+    "@swc/jest": "^0.2.39",
+    "jest": "^30.0.0",
+    "rstest-jest-compat": "file:.."
+  }
+}

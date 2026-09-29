@@ -1,20 +1,22 @@
 {
   "name": "rstest-jest-compat",
-  "private": true,
+  "version": "0.0.0",
   "description": "Run an existing Jest suite under Rstest without rewriting specs.",
+  "repository": "github:markmssd/rstest-jest-compat",
+  "exports": {
+    ".": {
+      "types": "./jest-compat.d.mts",
+      "default": "./jest-compat.mjs"
+    }
+  },
+  "files": [
+    "jest-compat.mjs",
+    "jest-compat.d.mts"
+  ],
   "scripts": {
-    "test": "npm run test:jest && npm run test:rstest",
-    "test:jest": "jest",
-    "test:rstest": "rstest run"
+    "test": "npm test --prefix test"
   },
-  "dependencies": {
-    "@example/pkg": "file:./packages/example-scoped-pkg",
-    "example-pkg": "file:./packages/example-pkg"
-  },
-  "devDependencies": {
-    "@rstest/core": "0.12.2",
-    "@swc/core": "^1.16.2",
-    "@swc/jest": "^0.2.39",
-    "jest": "^30.0.0"
+  "peerDependencies": {
+    "@rstest/core": ">=0.12.2"
   }
 }

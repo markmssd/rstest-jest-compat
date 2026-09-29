@@ -1,6 +1,6 @@
 module.exports = {
   restoreMocks: true,
-  testMatch: ['<rootDir>/test/**/*.test.js'],
+  testMatch: ['<rootDir>/**/*.test.js'],
   transform: {
     '^.+\\.js$': '@swc/jest',
   },

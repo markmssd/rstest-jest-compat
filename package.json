@@ -17,6 +17,6 @@
     "test": "npm test --prefix test"
   },
   "peerDependencies": {
-    "@rstest/core": ">=0.12.2"
+    "@rstest/core": ">=0.12.0"
   }
 }

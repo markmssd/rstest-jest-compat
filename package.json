@@ -1,0 +1,20 @@
+{
+  "name": "rstest-jest-compat",
+  "private": true,
+  "description": "Run an existing Jest suite under Rstest without rewriting specs.",
+  "scripts": {
+    "test": "npm run test:jest && npm run test:rstest",
+    "test:jest": "jest",
+    "test:rstest": "rstest run"
+  },
+  "dependencies": {
+    "@example/pkg": "file:./packages/example-scoped-pkg",
+    "example-pkg": "file:./packages/example-pkg"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.0",
+    "@rstest/core": "0.12.2",
+    "babel-jest": "^30.0.0",
+    "jest": "^30.0.0"
+  }
+}

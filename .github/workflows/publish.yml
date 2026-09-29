@@ -1,0 +1,36 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Install test dependencies
+        run: npm ci --prefix test
+
+      - name: Test
+        run: npm test
+
+      - name: Set the version from the release tag
+        run: npm version "${TAG#v}" --no-git-tag-version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+
+      - name: Publish
+        run: npm publish --tag "$DIST_TAG"
+        env:
+          DIST_TAG: ${{ github.event.release.prerelease && 'next' || 'latest' }}

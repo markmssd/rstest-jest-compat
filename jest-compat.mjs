@@ -3,11 +3,14 @@
  *
  *   // rstest.config.ts
  *   import { defineConfig } from '@rstest/core';
- *   import { withJestCompat } from './jest-compat.mjs';
+ *   import { jestCompat } from './jest-compat.mjs';
  *
- *   export default defineConfig(withJestCompat({ testEnvironment: 'jsdom', restoreMocks: true }));
+ *   export default defineConfig({
+ *     extends: jestCompat({ restoreMocks: true }),
+ *     testEnvironment: 'jsdom',
+ *   });
  *
- * The file plays three roles depending on who loads it: config helper (Node), loader
+ * The file plays three roles depending on who loads it: config extension (Node), loader
  * (Rspack, rewrites `jest.*` module APIs), and setup file (installs the `jest` global).
  * Keep it inside the project root: Rstest ignores the `rs.mock` calls of setup files
  * outside it.
@@ -39,7 +42,7 @@ export default function jestCompatLoader(source) {
   return [rewritten, ...rootMocks.map((request) => `rs.mock(${JSON.stringify(request)});`)].join('\n');
 }
 
-// Config helper.
+// Config extension.
 
 /** Jest applies `<root>/__mocks__/<package>` without a `jest.mock` call; Rstest needs one. */
 const findRootMocks = (root) => {
@@ -61,41 +64,34 @@ const findRootMocks = (root) => {
 };
 
 /**
- * `restoreMocks` takes Jest's meaning: restore spies before each test, leave `jest.fn()` alone.
+ * Pass `restoreMocks` here rather than in your config: Jest's restores spies and leaves
+ * `jest.fn()` alone, Rstest's also resets every mock implementation.
  *
- * @param {import('@rstest/core').RstestConfig} config
+ * @param {{ restoreMocks?: boolean }} [options]
+ * @returns {import('@rstest/core').ExtendConfigFn}
  */
-export const withJestCompat = ({ restoreMocks = false, ...config } = {}) => {
-  const userRspack = config.tools?.rspack;
-  const rootMocks = findRootMocks(path.resolve(config.root ?? process.cwd()));
-
-  return {
-    ...config,
+export const jestCompat =
+  ({ restoreMocks = false } = {}) =>
+  (userConfig) => ({
     globals: true,
-    setupFiles: [SELF, ...(config.setupFiles ?? [])],
+    setupFiles: [SELF],
     source: {
-      ...config.source,
-      define: { ...config.source?.define, __JEST_COMPAT_RESTORE_MOCKS__: String(restoreMocks) },
+      define: { __JEST_COMPAT_RESTORE_MOCKS__: String(restoreMocks) },
     },
     tools: {
-      ...config.tools,
-      rspack: [
-        (_rspackConfig, { addRules }) => {
-          addRules([
-            {
-              test: /\.[cm]?[jt]sx?$/,
-              exclude: /node_modules/,
-              enforce: 'post',
-              loader: SELF,
-              options: { rootMocks },
-            },
-          ]);
-        },
-        ...(Array.isArray(userRspack) ? userRspack : userRspack ? [userRspack] : []),
-      ],
+      rspack: (_rspackConfig, { addRules }) => {
+        addRules([
+          {
+            test: /\.[cm]?[jt]sx?$/,
+            exclude: /node_modules/,
+            enforce: 'post',
+            loader: SELF,
+            options: { rootMocks: findRootMocks(path.resolve(userConfig.root ?? process.cwd())) },
+          },
+        ]);
+      },
     },
-  };
-};
+  });
 
 // Setup file. Only runs inside the test environment, where Rstest's globals exist.
 

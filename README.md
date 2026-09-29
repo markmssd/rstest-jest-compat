@@ -12,20 +12,22 @@ Tested with Rstest 0.12.2 and Jest 30.5.
 ## Usage
 
 Copy `jest-compat.mjs` into your project (it has to live inside the project root), then
-wrap your config:
+add it to your config through `extends`:
 
-```js
-// rstest.config.mjs
+```ts
+// rstest.config.ts
 import { defineConfig } from '@rstest/core';
-import { withJestCompat } from './jest-compat.mjs';
+import { jestCompat } from './jest-compat.mjs';
 
-export default defineConfig(
-  withJestCompat({
-    testEnvironment: 'jsdom',
-    restoreMocks: true,
-  }),
-);
+export default defineConfig({
+  extends: jestCompat({ restoreMocks: true }),
+  testEnvironment: 'jsdom',
+});
 ```
+
+Your config stays a plain, fully typed `defineConfig`. Set `restoreMocks` on
+`jestCompat()`, not in your config: Rstest's own `restoreMocks` also resets every
+`jest.fn()` implementation.
 
 ## What it covers
 

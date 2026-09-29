@@ -2,7 +2,10 @@
   "name": "rstest-jest-compat",
   "version": "0.0.0",
   "description": "Run an existing Jest suite under Rstest without rewriting specs.",
-  "repository": "github:markmssd/rstest-jest-compat",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markmssd/rstest-jest-compat.git"
+  },
   "exports": {
     ".": {
       "types": "./jest-compat.d.mts",
